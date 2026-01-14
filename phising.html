@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Phishing Example (Educational Purpose Only)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #d63031;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .warning {
+            background-color: #ffeaa7;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+        input {
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Demo - Phishing Example (Educational Purpose Only)</h1>
+        <div class="warning">
+            <strong>Warning:</strong> This is a simulated phishing page for educational purposes only. It demonstrates how phishing attacks work and how attackers might automatically collect and store data. Never enter real credentials on suspicious websites. Always verify URLs and use official sites. Phishing can lead to identity theft, financial loss, and data breaches.
+        </div>
+        <form id="loginForm">
+            <label for="username">Username/Email:</label>
+            <input type="text" id="username" placeholder="Enter your username or email" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            
+            <button type="button" id="loginBtn">Login</button>
+        </form>
+    </div>
+
+    <!-- Modal for simulation -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Credentials Captured – Simulation Only</h2>
+            <p>This demo simulates how an attacker might automatically capture and log credentials. A CSV file with simulated data has been downloaded to your device.</p>
+            <p><strong>Demo Email:</strong> demo@example.com</p>
+            <p><strong>Hashed Demo Password:</strong> <span id="hashedPassword"></span></p>
+            <p><em>Note:</em> In real attacks, data is stored insecurely, leading to breaches. Use strong passwords, 2FA, and stay vigilant.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            // First, show the warning alert
+            alert("This is a phishing demonstration for educational purposes. Entering credentials on fake websites is dangerous and can lead to data theft. Click OK to proceed with the simulation, which will show hashed demo data only and download a simulated CSV log.");
+            
+            // Generate current date and time
+            const now = new Date();
+            const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
+            const time = now.toTimeString().split(' ')[0]; // HH:MM:SS
+            
+            // Generate hashed demo password (not user input)
+            const demoPassword = "demoPassword123"; // Simulated password
+            const hashed = CryptoJS.SHA256(demoPassword).toString();
+            document.getElementById('hashedPassword').textContent = hashed;
+            
+            // Prepare CSV content with simulated data
+            const demoEmail = "demo@example.com";
+            const status = "Simulation";
+            const csvContent = "Date,Time,Email,Hashed Password,Status\n" + date + "," + time + "," + demoEmail + "," + hashed + "," + status + "\n";
+            
+            // Automatically download the CSV
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'phishing_demo_log.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Show the modal
+            document.getElementById('modal').style.display = 'flex';
+        });
+
+        // Close modal when clicking the close button
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('modal').style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === document.getElementById('modal')) {
+                document.getElementById('modal').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
