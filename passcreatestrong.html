@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strong Password Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .strength {
+            margin-top: 1rem;
+        }
+        .strength-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        .strength-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .weak { background-color: #dc3545; width: 33%; }
+        .medium { background-color: #ffc107; width: 66%; }
+        .strong { background-color: #28a745; width: 100%; }
+        .feedback {
+            text-align: left;
+            margin-top: 1rem;
+        }
+        .suggestions {
+            background-color: #ffeaa7;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        .explanation {
+            background-color: #d4edda;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Strong Password Creator</h1>
+        <p>Create or check the strength of your passwords to stay secure. Remember, strong passwords are long, complex, and unique!</p>
+        
+        <div class="input-group">
+            <label for="password">Enter or Generate a Password:</label>
+            <input type="password" id="password" placeholder="Type your password here">
+        </div>
+        
+        <button id="generateBtn">Generate Strong Password</button>
+        <button id="checkBtn">Check Strength</button>
+        
+        <div class="strength">
+            <div class="strength-bar">
+                <div id="strengthFill" class="strength-fill"></div>
+            </div>
+            <p id="strengthText">Enter a password to check its strength.</p>
+        </div>
+        
+        <div class="feedback">
+            <div id="suggestions" class="suggestions" style="display: none;">
+                <strong>Suggestions to improve:</strong>
+                <ul id="suggestionList"></ul>
+            </div>
+            <div id="explanation" class="explanation" style="display: none;">
+                <strong>Why this password is secure:</strong>
+                <p id="explanationText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const generateBtn = document.getElementById('generateBtn');
+        const checkBtn = document.getElementById('checkBtn');
+        const strengthFill = document.getElementById('strengthFill');
+        const strengthText = document.getElementById('strengthText');
+        const suggestions = document.getElementById('suggestions');
+        const suggestionList = document.getElementById('suggestionList');
+        const explanation = document.getElementById('explanation');
+        const explanationText = document.getElementById('explanationText');
+
+        // Function to generate a strong password
+        function generatePassword() {
+            const length = 16;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+{}|:<>?[]\\;',./";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            return password;
+        }
+
+        // Function to check password strength
+        function checkStrength(password) {
+            let score = 0;
+            const checks = {
+                length: password.length >= 12,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*()_+{}|:<>?[\$\\;',./]/.test(password)
+            };
+
+            if (checks.length) score++;
+            if (checks.upper) score++;
+            if (checks.lower) score++;
+            if (checks.number) score++;
+            if (checks.special) score++;
+
+            let strength = 'Weak';
+            let className = 'weak';
+            if (score >= 4 && password.length >= 12) {
+                strength = 'Strong';
+                className = 'strong';
+            } else if (score >= 3 && password.length >= 8) {
+                strength = 'Medium';
+                className = 'medium';
+            }
+
+            strengthFill.className = 'strength-fill ' + className;
+            strengthText.textContent = `Password Strength: ${strength}`;
+
+            // Show suggestions
+            suggestionList.innerHTML = '';
+            if (!checks.length) suggestionList.innerHTML += '<li>Increase length to at least 12 characters.</li>';
+            if (!checks.upper) suggestionList.innerHTML += '<li>Add uppercase letters (A-Z).</li>';
+            if (!checks.lower) suggestionList.innerHTML += '<li>Add lowercase letters (a-z).</li>';
+            if (!checks.number) suggestionList.innerHTML += '<li>Include numbers (0-9).</li>';
+            if (!checks.special) suggestionList.innerHTML += '<li>Add special characters (!@#$%^&* etc.).li>';
+            suggestions.style.display = suggestionList.innerHTML ? 'block' : 'none';
+
+            return strength;
+        }
+
+        // Event listeners
+        passwordInput.addEventListener('input', () => {
+            checkStrength(passwordInput.value);
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const newPassword = generatePassword();
+            passwordInput.value = newPassword;
+            checkStrength(newPassword);
+            explanationText.textContent = "This password is 16 characters long and includes a mix of uppercase letters, lowercase letters, numbers, and special characters. It's randomly generated, making it hard to guess or crack. Use unique passwords for each account and consider a password manager.";
+            explanation.style.display = 'block';
+        });
+
+        checkBtn.addEventListener('click', () => {
+            checkStrength(passwordInput.value);
+        });
+    </script>
+</body>
+</html>
