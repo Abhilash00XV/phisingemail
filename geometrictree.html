@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Recursive Tree of Squares</title>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600" style="border: 1px solid black;"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Function to draw a square at position (x, y) with size s
+        function drawSquare(x, y, s) {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(x, y, s, s);
+            ctx.strokeStyle = 'black';
+            ctx.strokeRect(x, y, s, s);
+        }
+
+        // Recursive function to draw the tree
+        function drawTree(x, y, s, depth) {
+            if (depth === 0) return;
+
+            // Draw the current square
+            drawSquare(x, y, s);
+
+            // Reduction factors for size
+            const r = 0.7;  // For the left child
+            const r2 = 0.5; // For the right child (even smaller)
+
+            // Left child: placed upward on the top-left edge (aligned)
+            drawTree(x, y - s, s * r, depth - 1);
+
+            // Right child: placed upward on the top-right edge, sharing edges as described
+            drawTree(x + s * r, y - s, s * r2, depth - 1);
+        }
+
+        // Start drawing the tree
+        // Base square at (200, 400) with size 100, depth 5
+        drawTree(200, 400, 100, 5);
+    </script>
+</body>
+</html>
